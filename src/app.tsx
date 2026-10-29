@@ -37,5 +37,17 @@ export function createApp(config: RigConfig = loadConfig()) {
     );
   });
 
+  // Agents read this one. It is the same Digest the page renders, unsorted and unshaped here, so
+  // the two cannot disagree.
+  app.get('/api/digest/:night', (c) => {
+    const night = c.req.param('night');
+    if (!NIGHT.test(night)) return c.notFound();
+
+    const digest = readNight(config.runsDir, night);
+    if (digest === null) return c.notFound();
+
+    return c.json(digest);
+  });
+
   return app;
 }
